@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react';
 import {getAllStudents, deleteStudent} from "./client";
-import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Tag, Badge, Avatar, Radio, Popconfirm} from 'antd';
+import {
+    Layout,
+    Menu,
+    Breadcrumb,
+    Table,
+    Spin,
+    Empty,
+    Button,
+    Tag,
+    Badge,
+    Avatar,
+    Radio,
+    Popconfirm,
+    Divider
+} from 'antd';
 import {
     DesktopOutlined,
     PieChartOutlined,
@@ -228,6 +242,9 @@ function App() {
                     {renderStudents()}
                 </div>
             </Content>
+            <Divider>
+                <a target="_blank" href="https://flowcv.me/arno-vandijck">Click here to access my website</a>
+            </Divider>
             <Footer style={{ textAlign: 'center' }}>By Arno Vandijck ©2021</Footer>
         </Layout>
     </Layout>
