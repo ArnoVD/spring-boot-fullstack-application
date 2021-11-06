@@ -243,7 +243,7 @@ function App() {
                 </div>
             </Content>
             <Divider>
-                <a target="_blank" href="https://flowcv.me/arno-vandijck">Click here to access my website</a>
+                <a rel="noopener noreferrer" target="_blank" href="https://flowcv.me/arno-vandijck">Click here to access my website</a>
             </Divider>
             <Footer style={{ textAlign: 'center' }}>By Arno Vandijck ©2021</Footer>
         </Layout>
