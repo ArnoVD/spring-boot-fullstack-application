@@ -1,21 +1,69 @@
 import { useState, useEffect } from 'react';
-import { getAllStudents } from "./client";
-import {Layout, Menu, Breadcrumb, Table, Spin, Empty} from 'antd';
+import {getAllStudents, deleteStudent} from "./client";
+import {Layout, Menu, Breadcrumb, Table, Spin, Empty, Button, Tag, Badge, Avatar, Radio, Popconfirm} from 'antd';
 import {
     DesktopOutlined,
     PieChartOutlined,
     FileOutlined,
     TeamOutlined,
     UserOutlined,
-    LoadingOutlined,
+    LoadingOutlined, PlusOutlined,
 } from '@ant-design/icons';
 
+import StudentDrawerForm from "./StudentDrawerForm";
+
 import './App.css';
+import {errorNotification, successNotification} from "./Notification";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
-const columns = [
+// Custom avatar
+const TheAvatar = ({name}) => {
+    let trim = name.trim()
+    // If there is no name, return an icon as a avatar
+    if (trim.length === 0) {
+        return <Avatar icon={<UserOutlined/>}/>
+    }
+
+    // If there is only one word, return the first letter as a avatar
+    const split = trim.split(" ");
+    if (split.length === 1) {
+        return <Avatar>{name.charAt(0)}</Avatar>
+    }
+
+    // Else if there are two words, return the first letter and the last letter as an avatar
+    return <Avatar>
+        {`${name.charAt(0)}${name.charAt(name.length-1)}`}
+    </Avatar>
+}
+
+const removeStudent = (studentId, callback) => {
+    deleteStudent(studentId).then(() => {
+        successNotification("Student deleted", `Student with ${studentId} was deleted`);
+        // Callback is fetching the students, so that the list updates when a student is removed
+        callback();
+    }).catch(err => {
+        console.log(err.response)
+        err.response.json().then(res =>{
+            console.log(res);
+            errorNotification(
+                "There was an issue",
+                `${res.message} [${res.status}] [${res.error}]`
+            )
+        });
+    })
+}
+
+const columns = fetchStudents => [
+    // Custom avatar
+    {
+        title: '',
+        dataIndex: 'avatar',
+        key: 'avatar',
+        render: (text, student) =>
+            <TheAvatar name={student.name}/>
+    },
     {
         title: 'Id',
         dataIndex: 'id',
@@ -35,6 +83,22 @@ const columns = [
         title: 'Gender',
         dataIndex: 'gender',
         key: 'gender',
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        render: (text, student) =>
+            <Radio.Group>
+                <Popconfirm
+                    placement='topRight'
+                    title={`Are you sure to delete ${student.name}`}
+                    onConfirm={() => removeStudent(student.id, fetchStudents)}
+                    okText='Yes'
+                    cancelText='No'>
+                    <Radio.Button value="small">Delete</Radio.Button>
+                </Popconfirm>
+                <Radio.Button onClick={() => alert("TODO: Implement edit student")} value="small">Edit</Radio.Button>
+            </Radio.Group>
     }
 ];
 
@@ -45,6 +109,7 @@ function App() {
     const [students, setStudents] = useState([]);
     const [collapsed, setCollapsed] = useState(false);
     const [fetching, setFetching] = useState(true);
+    const [showDrawer, setShowDrawer] = useState(false);
 
     const fetchStudents = () =>
         getAllStudents()
@@ -54,7 +119,16 @@ function App() {
                 setStudents(data);
                 // Stop the loading icon
                 setFetching(false);
-            });
+            }).catch(err => {
+                console.log(err.response)
+                err.response.json().then(res =>{
+                    console.log(res);
+                    errorNotification(
+                        "There was an issue",
+                        `${res.message} [${res.status}] [${res.error}]`
+                    )
+                });
+        }).finally(() => setFetching(false))
 
     // useEffect is used to run the functions inside once the component is mounted
     useEffect(() => {
@@ -68,21 +142,54 @@ function App() {
             return <div className="loadingSpinner"><Spin indicator={antIcon} /></div>
         }
 
-        // If there are no student, we return a empty box icon
-        if(students.length <= 0){
-            return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+        // If there are no students, we return a empty box icon and a button to add a student
+        if (students.length <= 0) {
+            return <>
+                <Button
+                    onClick={() => setShowDrawer(!showDrawer)}
+                    type="primary" shape="round" icon={<PlusOutlined/>} size="small">
+                    Add New Student
+                </Button>
+                <StudentDrawerForm
+                    showDrawer={showDrawer}
+                    setShowDrawer={setShowDrawer}
+                    fetchStudents={fetchStudents}
+                />
+                <Empty/>
+            </>
         }
 
-        return <Table
-            dataSource={students}
-            columns={columns}
-            bordered
-            title={() => 'Students'}
-            pagination={{ pageSize: 50 }}
-            scroll={{ y: 240 }}
-            // This indexes every row of the table we return (Otherwise we get errors in our console)
-            rowKey = {(student) => student.id}
-        />;
+        // The extra <> is so we can return multiple items
+        return <>
+            <StudentDrawerForm
+                showDrawer={showDrawer}
+                setShowDrawer={setShowDrawer}
+                // This is used to fetch all students after adding a new student
+                fetchStudents={fetchStudents}
+            />
+            <Table
+                dataSource={students}
+                columns={columns(fetchStudents)}
+                bordered
+                title={() =>
+                    <>
+                        <Tag>Number of students:</Tag>
+                        <Badge count={students.length} className="site-badge-count-4"/>
+                        <br/><br/>
+                        {/* Onclick = shows the drawer or closes it */}
+                        <Button
+                            onClick={() => setShowDrawer(!showDrawer)}
+                            type="primary" shape="round" icon={<PlusOutlined />} size="small">
+                            Add New Student
+                        </Button>
+                    </>
+                }
+                pagination={{ pageSize: 50 }}
+                scroll={{ y: 240 }}
+                // This indexes every row of the table we return (Otherwise we get errors in our console)
+                rowKey = {(student) => student.id}
+            />
+        </>;
     }
 
     return <Layout style={{ minHeight: '100vh' }}>

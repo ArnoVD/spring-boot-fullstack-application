@@ -47,6 +47,13 @@
   border-radius: 4px;
 }
 
+.site-badge-count-4 .ant-badge-count {
+  margin-left: 5px;
+  color: #999;
+  background-color: #fff;
+  box-shadow: 0 0 0 1px #d9d9d9 inset;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

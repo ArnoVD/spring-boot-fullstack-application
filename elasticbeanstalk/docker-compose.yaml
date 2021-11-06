@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  backend:
+    image: "arnovd/springboot-react-fullstack:3"
+    ports:
+      - "80:8080"
+    restart: "always"
+    # This uses the application-dev.properties to connect to our RDS database on AWS
+    # Remove this if you want to use the local db
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
