@@ -242,10 +242,11 @@ function App() {
                     {renderStudents()}
                 </div>
             </Content>
-            <Divider>
-                <a rel="noopener noreferrer" target="_blank" href="https://flowcv.me/arno-vandijck">Click here to access my website</a>
-            </Divider>
-            <Footer style={{ textAlign: 'center' }}>By Arno Vandijck ©2021</Footer>
+            <Footer style={{ textAlign: 'center' }}>By Arno Vandijck ©2021
+                <Divider>
+                    <a rel="noopener noreferrer" target="_blank" href="https://flowcv.me/arno-vandijck">Click here to access my website</a>
+                </Divider>
+            </Footer>
         </Layout>
     </Layout>
 }
