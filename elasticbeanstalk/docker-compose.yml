@@ -1,7 +1,7 @@
 #version: "3.8"
 services:
   backend:
-    image: "arnovd/springboot-react-fullstack:latest"
+    image: "arnovd/springboot-react-fullstack:3"
     ports:
       - "80:8080"
     restart: "always"
