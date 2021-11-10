@@ -37,12 +37,10 @@ public class StudentService {
     }
 
     public void deleteStudent(Long studentId) {
-        // Check if student exists
-        if (findStudentById(studentId).isPresent()) {
-            studentRepository.deleteById(studentId);
-        } else {
-            throw new StudentNotFoundException("Student with id " + studentId + " does not exists");
+        if(!studentRepository.existsById(studentId)) {
+            throw new StudentNotFoundException(
+                    "Student with id " + studentId + " does not exists");
         }
-
+        studentRepository.deleteById(studentId);
     }
 }
