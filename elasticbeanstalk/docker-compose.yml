@@ -7,5 +7,5 @@ services:
     restart: "always"
     # This uses the application-dev.properties to connect to our RDS database on AWS
     # Remove this if you want to use the local db
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
+    #environment:
+      #SPRING_PROFILES_ACTIVE: dev
